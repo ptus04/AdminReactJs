@@ -90,6 +90,10 @@
   text-decoration: none;
   gap: 0.5rem;
 }
+.navbar > li > a {
+  display: flex;
+  align-items: center;
+}
 .navbar a > img {
   width: 1.5rem;
   height: 1.5rem;
@@ -163,8 +167,8 @@
 .card a img {
   width: 2rem;
   height: 2rem;
-  filter: invert(0.6) sepia(100%) saturate(10000%) hue-rotate(200deg);
+  filter: contrast(0) sepia(1) saturate(1000%) hue-rotate(180deg);
 }
 .card:first-of-type a img {
-  filter: invert(0.6) sepia(100%) saturate(10000%) hue-rotate(350deg);
+  filter: contrast(0) sepia(1) saturate(1000%) hue-rotate(310deg);
 }
