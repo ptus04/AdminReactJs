@@ -1,31 +1,17 @@
 :root {
-  --border-color: hsl(0, 0%, 80%);
   --my-color-red: hsl(350, 100%, 60%);
   --my-color-blue: hsl(200, 100%, 60%);
   --my-color-red-dim: hsl(350, 100%, 95%);
   --my-color-blue-dim: hsl(200, 100%, 95%);
 }
 
-.layout {
-  grid-template-areas:
-    "navbar header"
-    "navbar main";
-  display: grid;
-  grid-template-columns: 0.875fr 3fr;
-  grid-template-rows: 1fr 9fr;
+ul a > img {
+  filter: contrast(0);
 }
-.layout > .layout-header {
-  grid-area: header;
-}
-.layout > .layout-navbar {
-  grid-area: navbar;
-}
-.layout > .layout-main {
-  grid-area: main;
-}
-
-ul a:not(.active) > img {
-  filter: invert(0.5);
+ul a.active {
+  border-radius: 8px;
+  color: var(--color-white);
+  background-color: var(--my-color-red);
 }
 ul a.active > img {
   filter: invert(1);
@@ -36,27 +22,14 @@ ul a:hover:not(.active) {
 ul a:hover:not(.active) > img {
   filter: contrast(0) sepia(1) hue-rotate(310deg) saturate(1000%);
 }
-ul a.active {
-  border-radius: 8px;
-  color: var(--color-white);
-  background-color: var(--my-color-red);
-}
 
-.layout-main h3 > img {
-  width: 1.5rem;
-  height: 1.5rem;
+.img-primary {
   filter: contrast(0) sepia(1) hue-rotate(310deg) saturate(1000%);
 }
 
-.card a img {
-  filter: contrast(0) sepia(1) saturate(1000%) hue-rotate(180deg);
+.card button img {
+  filter: contrast(0) sepia(1) hue-rotate(180deg) saturate(1000%);
 }
-.card:first-of-type a img {
-  filter: contrast(0) sepia(1) saturate(1000%) hue-rotate(310deg);
-}
-
-.btn-secondary > img {
-  width: 1.5rem;
-  height: 1.5rem;
-  filter: contrast(0) sepia(1) saturate(1000%) hue-rotate(310deg);
+.card:first-of-type button img {
+  filter: contrast(0) sepia(1) hue-rotate(310deg) saturate(1000%);
 }
