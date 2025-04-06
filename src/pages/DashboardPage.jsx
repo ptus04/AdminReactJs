@@ -19,58 +19,78 @@ export default function DashboardPage() {
   const [reports, setReports] = useState(undefined);
   const [editing, setEditing] = useState(undefined);
 
+  const doFetch = async (signal) => {
+    let url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/overview";
+    let res = await fetch(url, { signal });
+    let data = await res.json();
+    setOverview(data);
+
+    url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports";
+    res = await fetch(url, { signal });
+    data = await res.json();
+    data = data.map((row) => {
+      return {
+        ...row,
+        orderValue: `$${row.orderValue}`,
+        orderDate: new Date(row.orderDate).toLocaleDateString(undefined, {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+        status:
+          typeof row.status === "string"
+            ? row.status
+            : row.status > 90
+              ? "Completed"
+              : row.status > 60
+                ? "In Progress"
+                : "New",
+      };
+    });
+    setReports(data);
+  };
+
   const handleEdit = (item) => {
     setEditing(item);
   };
 
   const handleSave = async (value) => {
-    setReports(reports.map((item) => (item.id === editing.id ? { ...value } : item)));
-    const url = `https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports/${editing.id}`;
-    await fetch(url, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(value),
-    });
+    if (editing.id) {
+      setReports(reports.map((item) => (item.id === editing.id ? { ...value } : item)));
+      const url = `https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports/${editing.id}`;
+      await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(value),
+      });
+    } else {
+      const url = `https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports`;
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(value),
+      });
+      doFetch();
+    }
   };
 
   const handleClose = () => setEditing(undefined);
+
+  const handleAdd = () => {
+    setEditing({
+      avatar: "https://avatar.iran.liara.run/public",
+      customerName: "",
+      company: "",
+      orderValue: "",
+      status: "New",
+    });
+  };
 
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const doFetch = async () => {
-      let url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/overview";
-      let res = await fetch(url, { signal });
-      let data = await res.json();
-      setOverview(data);
-
-      url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports";
-      res = await fetch(url, { signal });
-      data = await res.json();
-      (data = data.map((row) => {
-        return {
-          ...row,
-          orderValue: `$${row.orderValue}`,
-          orderDate: new Date(row.orderDate).toLocaleDateString(undefined, {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }),
-          status:
-            typeof row.status === "string"
-              ? row.status
-              : row.status > 90
-                ? "Completed"
-                : row.status > 60
-                  ? "In Progress"
-                  : "New",
-        };
-      })),
-        setReports(data);
-    };
-
-    doFetch();
+    doFetch(signal);
 
     return () => controller.abort();
   }, []);
@@ -108,6 +128,9 @@ export default function DashboardPage() {
         </h3>
 
         <div className="flex items-center gap-4">
+          <SecondaryButton icon={icons.addUserIcon} onClick={handleAdd}>
+            Add
+          </SecondaryButton>
           <SecondaryButton icon={icons.importIcon}>Import</SecondaryButton>
           <SecondaryButton icon={icons.importIcon} className="rotate-180">
             Export
