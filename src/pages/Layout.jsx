@@ -13,10 +13,10 @@ export default function Layout() {
             </button>
             <input type="search" placeholder="Search..." required />
           </form>
-          <button>
+          <button className="cursor-pointer">
             <img className="h-6 w-6" src={icons.notificationIcon} />
           </button>
-          <button>
+          <button className="cursor-pointer">
             <img className="h-6 w-6" src={icons.helpIcon} />
           </button>
           <Link href="profile">

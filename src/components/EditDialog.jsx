@@ -3,12 +3,12 @@ import { useEffect, useRef } from "react";
 function EditDialog({ open, onSave, onClose }) {
   const dialogRef = useRef(null);
 
-  useEffect(() => {    
+  useEffect(() => {
     dialogRef.current.value = open?.status;
   }, [open]);
 
   return (
-    <dialog className="absolute top-0 h-full w-full bg-black/50" open={open}>
+    <dialog className="fixed h-full w-full top-0 bg-black/50" open={open}>
       <form
         className="absolute top-[50%] left-[50%] container -translate-[50%] bg-white p-4"
         method="dialog"
