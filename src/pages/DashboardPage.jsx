@@ -5,7 +5,7 @@ import {
   OverviewCard,
   EditButton,
   SecondaryButton,
-  EditDialog,
+  Dialog,
 } from "../components";
 import DataTable from "datatables.net-react";
 import DataTablesCore from "datatables.net-dt";
@@ -23,8 +23,14 @@ export default function DashboardPage() {
     setEditing(item);
   };
 
-  const handleSave = (value) => {
-    setReports(reports.map((item) => (item.id === editing.id ? { ...item, status: value } : item)));
+  const handleSave = async (value) => {
+    setReports(reports.map((item) => (item.id === editing.id ? { ...value } : item)));
+    const url = `https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports/${editing.id}`;
+    await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
   };
 
   const handleClose = () => setEditing(undefined);
@@ -155,7 +161,7 @@ export default function DashboardPage() {
         </thead>
       </DataTable>
 
-      <EditDialog open={editing} onSave={handleSave} onClose={handleClose} />
+      <Dialog type="edit" open={editing} onSave={handleSave} onClose={handleClose} />
     </div>
   );
 }
