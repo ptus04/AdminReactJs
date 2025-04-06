@@ -10,3 +10,7 @@ input {
 *::-webkit-scrollbar {
   display: none;
 }
+
+html:has(dialog[open]) {
+  overflow: hidden;
+}

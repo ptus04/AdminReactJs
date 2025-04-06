@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { AvatarWithName, Badge, OverviewCard, EditButton, SecondaryButton } from "../components";
+import {
+  AvatarWithName,
+  Badge,
+  OverviewCard,
+  EditButton,
+  SecondaryButton,
+  EditDialog,
+} from "../components";
 import DataTable from "datatables.net-react";
 import DataTablesCore from "datatables.net-dt";
 import "datatables.net-responsive-dt";
@@ -9,16 +16,52 @@ import icons from "../icon-pack";
 export default function DashboardPage() {
   DataTable.use(DataTablesCore);
   const [overview, setOverview] = useState([]);
+  const [reports, setReports] = useState(undefined);
+  const [editing, setEditing] = useState(undefined);
+
+  const handleEdit = (item) => {
+    setEditing(item);
+  };
+
+  const handleSave = (value) => {
+    setReports(reports.map((item) => (item.id === editing.id ? { ...item, status: value } : item)));
+  };
+
+  const handleClose = () => setEditing(undefined);
 
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
     const doFetch = async () => {
-      const url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/overview";
-      const res = await fetch(url, { signal });
-      const data = await res.json();
+      let url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/overview";
+      let res = await fetch(url, { signal });
+      let data = await res.json();
       setOverview(data);
+
+      url = "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports";
+      res = await fetch(url, { signal });
+      data = await res.json();
+      (data = data.map((row) => {
+        return {
+          ...row,
+          orderValue: `$${row.orderValue}`,
+          orderDate: new Date(row.orderDate).toLocaleDateString(undefined, {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }),
+          status:
+            typeof row.status === "string"
+              ? row.status
+              : row.status > 90
+                ? "Completed"
+                : row.status > 60
+                  ? "In Progress"
+                  : "New",
+        };
+      })),
+        setReports(data);
     };
 
     doFetch();
@@ -68,23 +111,7 @@ export default function DashboardPage() {
 
       <DataTable
         className="hover row-border rounded-lg border border-gray-300 shadow"
-        ajax={{
-          url: "https://67ee8ffcc11d5ff4bf7a11b6.mockapi.io/reports",
-          cache: true,
-          dataSrc: (json) =>
-            json.map((row) => {
-              return {
-                ...row,
-                orderValue: `$${row.orderValue}`,
-                orderDate: new Date(row.orderDate).toLocaleDateString(undefined, {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                }),
-                status: row.status > 90 ? "Completed" : row.status > 60 ? "In Progress" : "New",
-              };
-            }),
-        }}
+        data={reports}
         options={{
           select: {
             style: "os",
@@ -103,7 +130,7 @@ export default function DashboardPage() {
         slots={{
           1: (data, row) => <AvatarWithName avatar={row.avatar} name={row.customerName} />,
           5: (data, row) => <Badge status={row.status} />,
-          6: (data, row) => <EditButton row={row} />,
+          6: (data, row) => <EditButton row={row} onEdit={handleEdit} />,
         }}
         columns={[
           { orderable: false },
@@ -127,6 +154,8 @@ export default function DashboardPage() {
           </tr>
         </thead>
       </DataTable>
+
+      <EditDialog open={editing} onSave={handleSave} onClose={handleClose} />
     </div>
   );
 }

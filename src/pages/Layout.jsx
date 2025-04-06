@@ -3,7 +3,7 @@ import icons from "../icon-pack";
 
 export default function Layout() {
   return (
-    <div className="grid h-dvh grid-cols-[max-content_1fr] grid-rows-[max-content_1fr]">
+    <div className="relative grid h-dvh grid-cols-[max-content_1fr] grid-rows-[max-content_1fr]">
       <div className="col-start-2 flex items-center justify-between border border-gray-300 p-4">
         <h1 className="text-3xl font-bold text-[var(--my-color-red)]">Dashboard</h1>
         <div className="flex items-center gap-4">
